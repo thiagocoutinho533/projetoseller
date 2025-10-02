@@ -1,69 +1,70 @@
+// Gera o Prisma Client (JS/TS)
 generator client {
-provider = "postgresql"
-url = env("DATABASE_URL")
+  provider = "prisma-client-js"
 }
 
+// Conexão com o banco (PostgreSQL)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 model User {
-id String @id @default(cuid())
-name String?
-email String @unique
-passwordHash String
-createdAt DateTime @default(now())
-accounts MLAccount[]
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  passwordHash  String
+  createdAt     DateTime    @default(now())
+  accounts      MLAccount[]
 }
-
 
 model MLAccount {
-id String @id @default(cuid())
-userId String
-user User @relation(fields: [userId], references: [id])
-mlUserId String @unique
-accessToken String
-refreshToken String
-tokenExpiresAt DateTime
-scope String?
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-items Item[]
-orders Order[]
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  mlUserId        String    @unique
+  accessToken     String
+  refreshToken    String
+  tokenExpiresAt  DateTime
+  scope           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  items           Item[]
+  orders          Order[]
 }
-
 
 model Item {
-id String @id @default(cuid())
-mlAccountId String
-mlAccount MLAccount @relation(fields: [mlAccountId], references: [id])
-mlItemId String @unique
-title String
-sku String?
-price Decimal @db.Numeric(18,2)
-stock Int?
-status String
-rawPayload Json
-lastSync DateTime @default(now())
+  id           String    @id @default(cuid())
+  mlAccountId  String
+  mlAccount    MLAccount @relation(fields: [mlAccountId], references: [id])
+  mlItemId     String    @unique
+  title        String
+  sku          String?
+  price        Decimal   @db.Numeric(18, 2)   // OK para Postgres
+  stock        Int?
+  status       String
+  rawPayload   Json
+  lastSync     DateTime  @default(now())
 }
-
 
 model Order {
-id String @id @default(cuid())
-mlAccountId String
-mlAccount MLAccount @relation(fields: [mlAccountId], references: [id])
-mlOrderId String @unique
-status String
-totalAmount Decimal @db.Numeric(18,2)
-buyerInfo Json?
-rawPayload Json
-createdAt DateTime @default(now())
+  id           String    @id @default(cuid())
+  mlAccountId  String
+  mlAccount    MLAccount @relation(fields: [mlAccountId], references: [id])
+  mlOrderId    String    @unique
+  status       String
+  totalAmount  Decimal   @db.Numeric(18, 2)   // OK para Postgres
+  buyerInfo    Json?
+  rawPayload   Json
+  createdAt    DateTime  @default(now())
 }
 
-
 model WebhookEvent {
-id String @id @default(cuid())
-mlAccountId String?
-topic String
-payload Json
-receivedAt DateTime @default(now())
-processedAt DateTime?
-result String?
+  id           String   @id @default(cuid())
+  mlAccountId  String?
+  topic        String
+  payload      Json
+  receivedAt   DateTime @default(now())
+  processedAt  DateTime?
+  result       String?
 }
